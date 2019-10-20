@@ -2,6 +2,7 @@
 
 A simple JAVA EE Artifact based on Dynamic Web App of Eclipse that uses Maven Ant Task.
 This simple artifact uses JAVA API 7 and the Jersey Rest 2.29 that use hk2 injection. This artifact support out of box servlets, jsp, rest services. This Projekt need **ANT**(>1.7) and **MAVEN** (>=3) installed.
+This project is intend to use to old ant projects that are not migrated to a new build system like maven or gradle. 
 
 ## Project Structure
 * .\WebContent --> Frontend and libs
