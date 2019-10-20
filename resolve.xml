@@ -1,0 +1,62 @@
+<project basedir="."
+	xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+	<echo message="downloading dependencies in lib folder" />
+	<property name="lib.dir" location="WebContent/WEB-INF/lib" />
+	
+	<!-- 
+	CONFIGURATION ANT TASK
+	-->
+	<path id="maven-ant-tasks.classpath"
+		path="${maven-lib.dir}/maven-ant-tasks-2.1.3.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+		uri="antlib:org.apache.maven.artifact.ant"
+		classpathref="maven-ant-tasks.classpath" />
+		
+		
+    <!--  
+	DEPENDENCIES VERSIONS
+	 -->
+	<property name="hk2.version" value="2.6.1"  />
+	<property name="javaee-api.version" value="7.0"  />
+	<property name="apache-commons.version" value = "2.6" />
+	<property name="jersey.version" value="2.29.1"  />
+	<property name="log4j2.version" value="2.12.1" />
+		
+	<!--  
+	DEPENDENCIES
+	 -->	
+	<artifact:dependencies
+		filesetId="dependency.fileset" pathId="dependencies.classpath">
+		<dependency groupId="junit" artifactId="junit" version="4.12" scope="test" />
+		<dependency groupId="commons-io" artifactId="commons-io" version="${apache-commons.version}" />
+		<dependency groupId="org.hamcrest" artifactId ="hamcrest-core" version="1.3" />
+		<dependency groupId="org.glassfish.hk2" artifactId ="hk2" version="${hk2.version}" />
+		<dependency groupId="org.glassfish.hk2" artifactId ="hk2-api" version="${hk2.version}" />
+		<dependency groupId="org.glassfish.hk2" artifactId ="hk2-core" version="${hk2.version}" />
+		<dependency groupId="org.glassfish.hk2" artifactId ="hk2-locator" version="${hk2.version}" />
+		<dependency groupId="org.glassfish.hk2" artifactId ="hk2-utils" version="${hk2.version}" />
+		<dependency groupId="javax" artifactId ="javaee-api" version="${javaee-api.version}" />
+		
+		<!-- rest dependencies -->
+		<dependency groupId="javax.ws.rs" artifactId="javax.ws.rs-api" version="2.1.1" />
+		<dependency groupId="org.glassfish.jersey.core" artifactId="jersey-client" version="${jersey.version}" />
+		<dependency groupId="org.glassfish.jersey.core" artifactId="jersey-server" version="${jersey.version}" />
+		<dependency groupId="org.glassfish.jersey.core" artifactId="jersey-common" version="${jersey.version}" />
+		<dependency groupId="org.glassfish.jersey.containers" artifactId="jersey-container-servlet" version="${jersey.version}" />
+		<dependency groupId="org.glassfish.jersey.containers" artifactId="jersey-container-servlet-core" version="${jersey.version}" />
+		<dependency groupId="org.glassfish.jersey.inject" artifactId="jersey-hk2" version="${jersey.version}" />
+		
+		<!-- logging -->
+		<dependency groupId="org.apache.logging.log4j" artifactId="log4j-api" version="${log4j2.version}" />
+		<dependency groupId="org.apache.logging.log4j" artifactId="log4j-core" version="${log4j2.version}" />
+		
+		
+		<!-- Open JDK dependencies -->
+		<dependency groupId="javax.activation" artifactId ="activation" version="1.1.1" />
+	</artifact:dependencies>
+	<copy todir="${lib.dir}">
+		<fileset refid="dependency.fileset" />
+		<!-- This mapper strips off all leading directory information -->
+		<mapper type="flatten" />
+	</copy>
+</project>

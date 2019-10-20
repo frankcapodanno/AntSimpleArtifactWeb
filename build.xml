@@ -1,0 +1,152 @@
+<project name="ArtifactWeb" default="main" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+	<description>
+		Web artifact to creating simple web compatibile java EE
+		applications
+		based on the dynamic web application on eclipse IDE.
+	</description>
+
+	<property name="ant.build.javac.source" value="1.8" />
+	<property name="ant.build.javac.target" value="1.8" />
+
+	<!-- set global properties -->
+	<property name="version" value="1.0" />
+	<property name="projectName" value="ArtifactWeb" />
+	<property name="dist.name" value="${projectName}" />
+
+	<!-- dirs config -->
+	<property name="src.dir" location="src/main/java" />
+	<property name="test.dir" location="src/test/java" />
+	<property name="lib.dir" location="WebContent/WEB-INF/lib" />
+	<property name="maven-dep.dir" location="maven-dep" />
+	<property name="maven-lib.dir" location="maven-lib" />
+	<property name="serverlib.dir" location="server-lib" />
+	<property name="build.dir" location="build" />
+	<property name="dist.dir" location="dist" />
+	<property name="report.dir" location="report" />
+
+	<!-- Downloads Maven Repositories -->
+	<path id="maven-ant-tasks.classpath" path="${maven-lib.dir}/maven-ant-tasks-2.1.3.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />
+
+	<!-- dependencies that need the software, dependencies provided by the server -->
+	<path id="jars">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<fileset dir="${serverlib.dir}" includes="**/*.jar" />
+	</path>
+
+	<target name="clean" description="clean the build">
+		<!-- Delete old dirs -->
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete dir="${report.dir}" />
+		<delete dir="${lib.dir}" />
+	</target>
+
+	<target name="init" description="create the folders">
+		<!-- create the folders -->
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/WEB-INF" />
+		<mkdir dir="${build.dir}/WEB-INF/lib" />
+		<mkdir dir="${build.dir}/WEB-INF/classes" />
+		<mkdir dir="${build.dir}/META-INF" />
+		<mkdir dir="${report.dir}" />
+		<mkdir dir="${lib.dir}" />
+	</target>
+
+	<!--
+	RESOLVE THE DEPENDENCIES
+	-->
+	<target name="resolve" description="resolve the dependencies">
+		<ant antfile="resolve.xml" />
+	</target>
+
+	<!--
+	PREPARE FOR COMPILE
+	-->	
+	<path id="build.classpath">
+		<fileset dir="${basedir}/">
+			<include name="${lib.dir}/*.jar" />
+			<include name="${serverlib.dir}/.jar" />
+		</fileset>
+	</path>
+
+	<path id="dependencies.classpath">
+		<fileset dir="${basedir}/">
+			<include name="${maven-dep.dir}/*.jar" />
+		</fileset>
+	</path>
+
+
+	<path id="test.path">
+		<fileset dir="${test.dir} /">
+			<include name="**/*" />
+		</fileset>
+	</path>
+
+
+	<pathconvert property="mf.classpath" pathsep=" ">
+		<path refid="build.classpath" />
+		<mapper>
+			<chainedmapper>
+				<flattenmapper />
+				<globmapper from="*.jar" to="lib/*.jar" />
+			</chainedmapper>
+		</mapper>
+	</pathconvert>
+
+
+	<!--
+	COMPILE 
+	-->
+	<target name="compile" depends="clean" description="compile the classes">
+
+		<!-- Compile the java code from ${src.dir} into ${build.dir} -->
+
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}/WEB-INF/classes" classpathref="jars" debug="on" />
+		<javac includeantruntime="false" srcdir="${test.dir}" destdir="${build.dir}/WEB-INF/classes" classpathref="jars" debug="on" />
+
+		<copy file="${src.dir}\log4j2.xml" todir="${build.dir}/WEB-INF/classes" overwrite="true" />
+
+		<copy todir="${build.dir}">
+			<fileset dir="WebContent" />
+		</copy>
+
+		<copy todir="${build.dir}/WEB-INF/lib">
+			<fileset dir="${lib.dir}" />
+		</copy>
+
+	</target>
+
+	<!--
+	DIST
+	-->
+	<target name="dist" depends="compile">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist.dir}" />
+		<buildnumber />
+		<jar jarfile="${dist.dir}/${dist.name}.war" basedir="${build.dir}">
+			<zipgroupfileset dir="${lib.dir}" includes="*.jar" excludes="" />
+			<manifest>
+				<!-- create an executable Jar -->
+				<attribute name="Main-Class" value="click.capodanno.xmlutil.Main" />
+				<attribute name="Class-Path" value="${mf.classpath}" />
+				<attribute name="Specification-Title" value="${projectName}" />
+				<attribute name="Specification-Version" value="${version}" />
+				<attribute name="Specification-Vendor" value="Example Organization" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!--
+	TEST EXECUTE THE UNIT TESTS
+	-->
+	<target name="test" depends="compile">
+	</target>
+
+	<!-- Default, run this -->
+	<target name="main" depends="clean, init, resolve, compile, test, dist">
+		<echo message="the distro will be compiled and created..." />
+	</target>
+
+</project>
