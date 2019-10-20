@@ -19,9 +19,9 @@ This project is intend to use to old ant projects that are not migrated to a new
 
 ## Ant tasks
 
-Are defined different ant tasks. When you import this project in Eclipse, you need to execute as command **ant resolve** to download all neccessary libraries and after you need to refresh your projekt.
+Are defined different ant tasks. When you import this project in Eclipse, you need to execute as command **ant resolve** to download all neccessary libraries and after you need to refresh your project.
 
-The tasks in order to execute :
+The ant tasks in order to execute :
 * clean : remove the builds directories, reports directory, and the web application lib directory
 * init : create all the builds directories, reports directory and the web application lib directory
 * resolve : using Maven download all the dependencies
